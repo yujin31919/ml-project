@@ -1,0 +1,107 @@
+[
+  {
+    "objectID": "project(2).html",
+    "href": "project(2).html",
+    "title": "PROJECT2 : 붓꽃 분류",
+    "section": "",
+    "text": "seaborn에서는 붓꽃에 대한 데이터를 제공함\n붓꽃의 품종에 영향을 미치는 요인은 무엇인지 파악하고, 모델학습을 통해 품종을 예측하고자함"
+  },
+  {
+    "objectID": "project(2).html#데이터-셋",
+    "href": "project(2).html#데이터-셋",
+    "title": "PROJECT2 : 붓꽃 분류",
+    "section": "",
+    "text": "seaborn에서는 붓꽃에 대한 데이터를 제공함\n붓꽃의 품종에 영향을 미치는 요인은 무엇인지 파악하고, 모델학습을 통해 품종을 예측하고자함"
+  },
+  {
+    "objectID": "project(2).html#데이터-확인-및-전처리",
+    "href": "project(2).html#데이터-확인-및-전처리",
+    "title": "PROJECT2 : 붓꽃 분류",
+    "section": "2. 데이터 확인 및 전처리",
+    "text": "2. 데이터 확인 및 전처리\n\n# 라이브러리 불러오기\nimport numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\n\n# 데이터 불러오기\ndf = sns.load_dataset('iris')\ndf.head()\n\n\n\n\n\n\n\n\nsepal_length\nsepal_width\npetal_length\npetal_width\nspecies\n\n\n\n\n0\n5.1\n3.5\n1.4\n0.2\nsetosa\n\n\n1\n4.9\n3.0\n1.4\n0.2\nsetosa\n\n\n2\n4.7\n3.2\n1.3\n0.2\nsetosa\n\n\n3\n4.6\n3.1\n1.5\n0.2\nsetosa\n\n\n4\n5.0\n3.6\n1.4\n0.2\nsetosa\n\n\n\n\n\n\n\n\n# 데이터 확인\ndf.info()\n\n&lt;class 'pandas.core.frame.DataFrame'&gt;\nRangeIndex: 150 entries, 0 to 149\nData columns (total 5 columns):\n #   Column        Non-Null Count  Dtype  \n---  ------        --------------  -----  \n 0   sepal_length  150 non-null    float64\n 1   sepal_width   150 non-null    float64\n 2   petal_length  150 non-null    float64\n 3   petal_width   150 non-null    float64\n 4   species       150 non-null    object \ndtypes: float64(4), object(1)\nmemory usage: 6.0+ KB\n\n\n\n# 데이터 전처리 : 결측값확인\ndf.isna().sum()\n\nsepal_length    0\nsepal_width     0\npetal_length    0\npetal_width     0\nspecies         0\ndtype: int64\n\n\n\n결측값은 없었음."
+  },
+  {
+    "objectID": "project(2).html#데이터-분할-학습데이터-평가데이터",
+    "href": "project(2).html#데이터-분할-학습데이터-평가데이터",
+    "title": "PROJECT2 : 붓꽃 분류",
+    "section": "3.데이터 분할 : 학습데이터, 평가데이터",
+    "text": "3.데이터 분할 : 학습데이터, 평가데이터\n\n학습 데이터와 평가 데이터를 8:2 비율로 분할함\n\n\n# 학습/평가 데이터 분할(8:2 비율)\n\n\nX = df.drop(columns = 'species')     #feature\ny = df['species']                    #target\n\nfrom sklearn.model_selection import train_test_split\nX_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2, random_state=42)"
+  },
+  {
+    "objectID": "project(2).html#데이터-탐색",
+    "href": "project(2).html#데이터-탐색",
+    "title": "PROJECT2 : 붓꽃 분류",
+    "section": "4. 데이터 탐색",
+    "text": "4. 데이터 탐색\n\n# 상자수염 그래프\n\ndf_train = pd.concat([X_train,y_train],axis = 1)\n\n\nplt.figure(figsize=(5,3))\nfor i,feature in enumerate(X_train.columns):\n    plt.subplot(2,2,i+1)         \n    sns.boxplot(x=feature,y='species',hue = 'species',data=df_train)\n    plt.ylabel('')\nplt.show()\n\n\n\n\n\n\n\n\n\n# 산점도\nsns.pairplot(df_train,hue='species',height =2)\nplt.show()"
+  },
+  {
+    "objectID": "project(2).html#분류모델-학습",
+    "href": "project(2).html#분류모델-학습",
+    "title": "PROJECT2 : 붓꽃 분류",
+    "section": "5. 분류모델 학습",
+    "text": "5. 분류모델 학습\n\n# 최적의 k값 선택\n\nfrom sklearn.neighbors import KNeighborsClassifier\nfrom sklearn.model_selection import cross_val_score\n\nk_range = range(1,20,2)\nk_scores = []\n\nfor k in range(1,2):\n    knn = KNeighborsClassifier(n_neighbors=k)\n    scores = cross_val_score(knn,X_train,y_train, cv=5, scoring='accuracy')\n    k_scores.append(scores.mean())\n    print(f\"k={k}일때 정확도: {scores.mean():.3f}\")\n\nk=1일때 정확도: 0.950\n\n\n\n# 모델 성능이 가장 좋은 k 값 선택\nbest_k = k_range[k_scores.index(max(k_scores))]\nprint(f\"최적의 k값은 {best_k}이며 ,평균 정확도는{max(k_scores):.3f}\")\n\n최적의 k값은 1이며 ,평균 정확도는0.950\n\n\n\n# K-NN분류모델 생성 및 학습\nknn = KNeighborsClassifier(n_neighbors=best_k)\nknn.fit(X_train,y_train)\n\n#학습데이터로 학습한 분류모델에 평가 데이터를 입력하여 클래스 분류\ny_pred = knn.predict(X_test)\n\n#분류모델 평가: 정확도, 정밀도, 재현도\nfrom sklearn.metrics import accuracy_score,precision_score,recall_score\n\n\naccuracy = accuracy_score(y_test,y_pred)\nprecision = precision_score(y_test,y_pred,average='micro')\nrecall = recall_score(y_test,y_pred,average='micro')\n\n\nprint(f'정확도: {accuracy:.3f}')\nprint(f'정밀도: {precision:.3f}')\nprint(f'재현도: {recall:.3f}')\n\n정확도: 1.000\n정밀도: 1.000\n재현도: 1.000"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "2025 창의융합과제연구",
+    "section": "",
+    "text": "python"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site"
+  },
+  {
+    "objectID": "project(1).html",
+    "href": "project(1).html",
+    "title": "Project(1) 캘리포니아 주택 가격 분석",
+    "section": "",
+    "text": "[데이터] scikit-learn에서 제공하는 1990년대 캘리포니아 주택 가격에 대한 데이터를 제공함\n캘리포니아 주택 가격에 영향을 미치는 요인은 무엇인지 파악하고,예측하는 회귀모델을 학습시키고자 함.\n총 20,640개의 관측값과 8개의 독립변수(feature), 1개의 종속변수(target)으로 구성됨"
+  },
+  {
+    "objectID": "project(1).html#데이터-셋",
+    "href": "project(1).html#데이터-셋",
+    "title": "Project(1) 캘리포니아 주택 가격 분석",
+    "section": "",
+    "text": "[데이터] scikit-learn에서 제공하는 1990년대 캘리포니아 주택 가격에 대한 데이터를 제공함\n캘리포니아 주택 가격에 영향을 미치는 요인은 무엇인지 파악하고,예측하는 회귀모델을 학습시키고자 함.\n총 20,640개의 관측값과 8개의 독립변수(feature), 1개의 종속변수(target)으로 구성됨"
+  },
+  {
+    "objectID": "project(1).html#데이터-확인-및-전처리",
+    "href": "project(1).html#데이터-확인-및-전처리",
+    "title": "Project(1) 캘리포니아 주택 가격 분석",
+    "section": "2. 데이터 확인 및 전처리",
+    "text": "2. 데이터 확인 및 전처리\n\n# 라이브러리 불러오기\nimport numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\n\n# 데이터 불러오기\n\nfrom sklearn.datasets import fetch_california_housing\ndata = fetch_california_housing(as_frame = True)\ndf = data.frame\ndf.head(3)\n\n\n\n\n\n\n\n\nMedInc\nHouseAge\nAveRooms\nAveBedrms\nPopulation\nAveOccup\nLatitude\nLongitude\nMedHouseVal\n\n\n\n\n0\n8.3252\n41.0\n6.984127\n1.023810\n322.0\n2.555556\n37.88\n-122.23\n4.526\n\n\n1\n8.3014\n21.0\n6.238137\n0.971880\n2401.0\n2.109842\n37.86\n-122.22\n3.585\n\n\n2\n7.2574\n52.0\n8.288136\n1.073446\n496.0\n2.802260\n37.85\n-122.24\n3.521\n\n\n\n\n\n\n\n\n#데이터 확인\ndf.info()\n\n&lt;class 'pandas.core.frame.DataFrame'&gt;\nRangeIndex: 20640 entries, 0 to 20639\nData columns (total 9 columns):\n #   Column       Non-Null Count  Dtype  \n---  ------       --------------  -----  \n 0   MedInc       20640 non-null  float64\n 1   HouseAge     20640 non-null  float64\n 2   AveRooms     20640 non-null  float64\n 3   AveBedrms    20640 non-null  float64\n 4   Population   20640 non-null  float64\n 5   AveOccup     20640 non-null  float64\n 6   Latitude     20640 non-null  float64\n 7   Longitude    20640 non-null  float64\n 8   MedHouseVal  20640 non-null  float64\ndtypes: float64(9)\nmemory usage: 1.4 MB\n\n\n\n캘리포니아 주택 가격 데이터를 확인한 결과, 관측값은 20,640 개, 변수는 9개로 나타남.\n주택 가격에 영향을 미치는 특성(feature)은 다음과 같음\n\nMedInc 지역 중위 소득 (10,000 USD)\nHouseAge 주택 연식 (건축 후 경과된 연도 수)\nAveRooms 가구당 평균 방 개수\nAveBedrms 가구당 평균 침실 개수\nPopulation 지역 내 인구 수\nAveOccup 가구당 평균 거주 인원 수\nLatitude 위도\nLongitude 경도\nMedHouseVal 주택 중위 가격 (100,000 USD)\n\n종속변수( target) 는 Medhouseval(주택중위가격)임\n\n\n\n# 데이터 전처리 : 결측값 확인\ndf.isna().sum()\n\nMedInc         0\nHouseAge       0\nAveRooms       0\nAveBedrms      0\nPopulation     0\nAveOccup       0\nLatitude       0\nLongitude      0\nMedHouseVal    0\ndtype: int64\n\n\n\n결측값은 없었음."
+  },
+  {
+    "objectID": "project(1).html#데이터-분할-학습데이터-평가데이터",
+    "href": "project(1).html#데이터-분할-학습데이터-평가데이터",
+    "title": "Project(1) 캘리포니아 주택 가격 분석",
+    "section": "3.데이터 분할 : 학습데이터, 평가데이터",
+    "text": "3.데이터 분할 : 학습데이터, 평가데이터\n\n학습 데이터와 평가 데이터를 7:3 비율로 분할함\n\n\na,b = [10,20]\nprint(a)\nprint(b)\n\n10\n20\n\n\n\n# 학습/평가 데이터 분할(7:3비율)\nX = data.data      #feature\ny = data.target    #target\n\nfrom sklearn.model_selection import train_test_split\nX_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.3, random_state=42)       \n# 0.3해서 비율나누고 난수(랜덤)로 시드값 형성하는거임..!\n\n\nX_train\n\n\n\n\n\n\n\n\nMedInc\nHouseAge\nAveRooms\nAveBedrms\nPopulation\nAveOccup\nLatitude\nLongitude\n\n\n\n\n7061\n4.1312\n35.0\n5.882353\n0.975490\n1218.0\n2.985294\n33.93\n-118.02\n\n\n14689\n2.8631\n20.0\n4.401210\n1.076613\n999.0\n2.014113\n32.79\n-117.09\n\n\n17323\n4.2026\n24.0\n5.617544\n0.989474\n731.0\n2.564912\n34.59\n-120.14\n\n\n10056\n3.1094\n14.0\n5.869565\n1.094203\n302.0\n2.188406\n39.26\n-121.00\n\n\n15750\n3.3068\n52.0\n4.801205\n1.066265\n1526.0\n2.298193\n37.77\n-122.45\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n11284\n6.3700\n35.0\n6.129032\n0.926267\n658.0\n3.032258\n33.78\n-117.96\n\n\n11964\n3.0500\n33.0\n6.868597\n1.269488\n1753.0\n3.904232\n34.02\n-117.43\n\n\n5390\n2.9344\n36.0\n3.986717\n1.079696\n1756.0\n3.332068\n34.03\n-118.38\n\n\n860\n5.7192\n15.0\n6.395349\n1.067979\n1777.0\n3.178891\n37.58\n-121.96\n\n\n15795\n2.5755\n52.0\n3.402576\n1.058776\n2619.0\n2.108696\n37.77\n-122.42\n\n\n\n\n14448 rows × 8 columns\n\n\n\n\ny_test\n\n20046    0.47700\n3024     0.45800\n15663    5.00001\n20484    2.18600\n9814     2.78000\n          ...   \n17505    2.37500\n13512    0.67300\n10842    2.18400\n16559    1.19400\n5786     2.09800\nName: MedHouseVal, Length: 6192, dtype: float64\n\n\n\n20640*0.3            # 7:3으로 잘 분할됨..!\n\n6192.0"
+  },
+  {
+    "objectID": "project(1).html#데이터-탐색",
+    "href": "project(1).html#데이터-탐색",
+    "title": "Project(1) 캘리포니아 주택 가격 분석",
+    "section": "4. 데이터 탐색",
+    "text": "4. 데이터 탐색\n\n# 요약통계량 확인\n\ndf_train = pd.concat([X_train,y_train],axis = 1)\ndf_train.head()\n\n\n\n\n\n\n\n\nMedInc\nHouseAge\nAveRooms\nAveBedrms\nPopulation\nAveOccup\nLatitude\nLongitude\nMedHouseVal\n\n\n\n\n7061\n4.1312\n35.0\n5.882353\n0.975490\n1218.0\n2.985294\n33.93\n-118.02\n1.93800\n\n\n14689\n2.8631\n20.0\n4.401210\n1.076613\n999.0\n2.014113\n32.79\n-117.09\n1.69700\n\n\n17323\n4.2026\n24.0\n5.617544\n0.989474\n731.0\n2.564912\n34.59\n-120.14\n2.59800\n\n\n10056\n3.1094\n14.0\n5.869565\n1.094203\n302.0\n2.188406\n39.26\n-121.00\n1.36100\n\n\n15750\n3.3068\n52.0\n4.801205\n1.066265\n1526.0\n2.298193\n37.77\n-122.45\n5.00001\n\n\n\n\n\n\n\n\n# 중위 주택 가격에 대한 분포\n\nplt.figure(figsize=(5,3))\nsns.histplot(df_train['MedHouseVal'],color = 'black',alpha=0.3)\nplt.show()\n\n\n\n\n\n\n\n\n\n# 상자그림으로 보자아\n\nplt.figure(figsize=(7,1))\nsns.boxplot(x ='MedHouseVal',data = df_train)\nplt.show()\n\n\n\n\n\n\n\n\n\n중위 주택 가격의 평균은 약 20만 달러로 나타남.(MedHouseVal)\n표준편차는 11만 달러로 나타남. 중위주택가격의 최소값은 1만 5천달러, 최대값은 50만달러로 나타남.\n히스토 그램과 상자그림을 살펴보면 중위주택 가격이 매우 높은 이상값이 많이 존재함을 알 수있음.\n\n\n#산점도\n\nsns.pairplot(df_train,height=0.8,plot_kws={'s':5},diag_kind='kde')\nplt.show()\n\n\n\n\n\n\n\n\n\n#상관계수\n\ncorr_train = df_train.corr()\ncorr_train\n\n\n\n\n\n\n\n\nMedInc\nHouseAge\nAveRooms\nAveBedrms\nPopulation\nAveOccup\nLatitude\nLongitude\nMedHouseVal\n\n\n\n\nMedInc\n1.000000\n-0.117506\n0.323255\n-0.071110\n0.003661\n0.024554\n-0.075892\n-0.019019\n0.688229\n\n\nHouseAge\n-0.117506\n1.000000\n-0.157529\n-0.087350\n-0.291589\n0.017437\n0.003461\n-0.101083\n0.106549\n\n\nAveRooms\n0.323255\n-0.157529\n1.000000\n0.845543\n-0.075529\n-0.004659\n0.111067\n-0.028503\n0.152106\n\n\nAveBedrms\n-0.071110\n-0.087350\n0.845543\n1.000000\n-0.071975\n-0.005809\n0.073138\n0.017361\n-0.048455\n\n\nPopulation\n0.003661\n-0.291589\n-0.075529\n-0.071975\n1.000000\n0.075019\n-0.101665\n0.092163\n-0.024316\n\n\nAveOccup\n0.024554\n0.017437\n-0.004659\n-0.005809\n0.075019\n1.000000\n0.007654\n-0.002295\n-0.020960\n\n\nLatitude\n-0.075892\n0.003461\n0.111067\n0.073138\n-0.101665\n0.007654\n1.000000\n-0.923408\n-0.141528\n\n\nLongitude\n-0.019019\n-0.101083\n-0.028503\n0.017361\n0.092163\n-0.002295\n-0.923408\n1.000000\n-0.049347\n\n\nMedHouseVal\n0.688229\n0.106549\n0.152106\n-0.048455\n-0.024316\n-0.020960\n-0.141528\n-0.049347\n1.000000\n\n\n\n\n\n\n\n\nupp_mat = np.triu(corr_train)\n\n\nplt.figure(figsize = (5,3))\nsns.heatmap(corr_train,annot=True,mask=upp_mat,vmin=-1,vmax=1)\nplt.title('Correlation Matrix')\nplt.show()\n\n\n\n\n\n\n\n\n\n중위 주택 가격은 지역 중위 소득과 강한 양의 상관관계가 존재함\n또한 주택연식,가구당 평균 방 개수, 위도 간에도 약한 양의 상관관계가잇음\n따라서 중위 주택 가격을 예측하는 특성(feature)으로 해당 변수를 선택함."
+  },
+  {
+    "objectID": "project(1).html#회귀모델-학습",
+    "href": "project(1).html#회귀모델-학습",
+    "title": "Project(1) 캘리포니아 주택 가격 분석",
+    "section": "5. 회귀모델 학습",
+    "text": "5. 회귀모델 학습\n\n# 상관관계가 존재하는 특성(feature) 선택\n# scikit-Learn에서 입력 데이터(feature)선택\nfeatures = ['MedInc','HouseAge','AveRooms','Latitude']\ntarget = 'MedHouseVal'\n\nX_train = df_train[features]                   # 2차원 배열\n\n\n# 선형 회귀모델 생성 및 학습\nfrom sklearn.linear_model import LinearRegression\nmodel = LinearRegression()\nmodel.fit(X_train,y_train); # ; 찍으면 결과 안나옴.!\n\n\n\n#회귀계수(regression coefficient)\n\npd.DataFrame({'Features':features, 'Coefficient': model.coef_})\n\n\n\n\n\n\n\n\nFeatures\nCoefficient\n\n\n\n\n0\nMedInc\n0.435658\n\n\n1\nHouseAge\n0.016937\n\n\n2\nAveRooms\n-0.019505\n\n\n3\nLatitude\n-0.045071\n\n\n\n\n\n\n\n\n(1)회귀계수를 살펴보면 중위주택 가격은 지역 중위 소득이 1만 달러 증가하면 중위 주택 가격은 4만 3천 달러 증가하는 것으로 나타남.\n(2)또한 주택연식이 1년증가하면 중위주택가격은 1693달러 증가하는 것으로 나타남\n(3)중위주택 가격은 가구당 평균 방의 개수가 1개 증가하면 1950달러 감소하는 것으로 나타남\n(4)위도가 1도 증가하면 중위 주택 가격은 4507달러 감소하는 경향이있음\n\n(1)과 (4)에 의해 이는 경제적으로 여유가 있을수록 좋은 집에 거주함을 알 수 있으며, 일반적으로 캘리포니아주는 남부 지역이 상대적으로 대도시가 많아 주택 가격이 더 높은 것을 반영하고있다."
+  },
+  {
+    "objectID": "project(1).html#회귀모델-평가",
+    "href": "project(1).html#회귀모델-평가",
+    "title": "Project(1) 캘리포니아 주택 가격 분석",
+    "section": "6. 회귀모델 평가",
+    "text": "6. 회귀모델 평가\n\n# 평가 데이터에서도 학습데이터에서 사용한 독립변수만 선택\nX_test = X_test[features]\n\n\n\n## 회귀모델 평가 : RMSE(MSE에 양의 제곱근), 결정계수\n#학습데이터로 학습한  회귀모델에 평가데이터를 입력해서 예측값 계산\ny_pred = model.predict(X_test)\n\n#평가 데이터의 실제 관측값과 예측값을 비교하여 모델을 평가\nfrom sklearn.metrics import mean_squared_error,r2_score\nRMSE = np.sqrt(mean_squared_error(y_test,y_pred))\nR2 = r2_score(y_test,y_pred)\n\nprint(f'RMSE :{RMSE:.3f}')\nprint(f'결정계수 :{R2:.3f}')\n\nRMSE :0.794\n결정계수 :0.520\n\n\n결과 및 시사점\n\nRMSE는 0.794로, 주택 중위 가격의 실제값과 예측값이 평균적으로 약 8만 달러 차이가 있다는 것을 의미함\n학습 데이터에서 주택 중위 가격의 평균은 약 20만 달러인 점을 고려하면, 모델의 평균 오차는 약 25% 수준임을 알 수 있음\n따라서 평균 오차가 비교적 큰 편이므로, 모델 성능 개선이 필요한 것으로 판단됨\n회귀계수를 살펴보면 지역 중위 소득, 주택 연식이 증가할수록 주택 중위 가격은 높아지며, 가구당 평균 거주 인원 수, 위도가 증가할수록 주택 중위 가격은 낮아지는 것으로 나타남"
+  }
+]

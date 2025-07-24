@@ -1,0 +1,23 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "2025 창의융합과제연구"
+  navbar:
+    left:
+      - href: project(1).ipynb
+        text: Project1
+      - href: project(2).ipynb
+        text: Project2
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+    css: styles.css
+    toc: true
+
+
+
