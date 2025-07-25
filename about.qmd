@@ -1,5 +1,4 @@
 ---
-title: "About"
+title: "타이타닉 데이터 분석"
 ---
 
-About this site
