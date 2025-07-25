@@ -6,9 +6,9 @@ website:
   title: "2025 창의융합과제연구"
   navbar:
     left:
-      - href: project(1).ipynb
+      - href: project1.ipynb
         text: Project1
-      - href: project(2).ipynb
+      - href: project2.ipynb
         text: Project2
       - href: Titanic.ipynb
         text: Titanic
