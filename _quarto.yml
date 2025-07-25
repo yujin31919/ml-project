@@ -10,7 +10,7 @@ website:
         text: Project1
       - href: project(2).ipynb
         text: Project2
-      - href: Titanic.html
+      - href: Titanic.ipynb
         text: Titanic
 
 format:
